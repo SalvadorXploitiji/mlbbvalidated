@@ -1,16 +1,16 @@
 {
   "name": "mlvalidated",
   "version": "1.0.0",
-  "description": "MLBB Account Retrieval CLI Tool - Created by SAL",
+  "description": "MLVALIDATED | Created by SAL - Tools untuk simulate retrieve akaun MLBB",
   "main": "mlvalidated.js",
   "scripts": {
     "start": "node mlvalidated.js"
   },
+  "keywords": ["mlbb", "validated", "moonton", "tools", "terminal"],
   "author": "SAL",
   "license": "MIT",
+  "type": "commonjs",
   "dependencies": {
-    "chalk": "^4.1.2",
-    "inquirer": "^8.2.4",
-    "ora": "^6.3.1"
+    "chalk": "^4.1.2"
   }
 }
