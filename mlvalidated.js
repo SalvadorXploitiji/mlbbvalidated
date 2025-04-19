@@ -1,90 +1,84 @@
-#!/usr/bin/env node
-const inquirer = require('inquirer');
+const readline = require('readline');
 const chalk = require('chalk');
-const ora = require('ora');
-const data = require('./data'); // Import dari data.js
 
-const password = 'salvalidated123';
+const data = require('./data'); // file data.js yang simpan device/order/thirdParty
 
-function randomDate(start = new Date(2020, 0, 1), end = new Date()) {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
-    .toISOString().split('T')[0];
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
+function question(query) {
+  return new Promise(resolve => rl.question(query, resolve));
+}
+
+function randomItem(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 function generateOrderId() {
-  return `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+  return 'ORD-' + Math.random().toString(36).substring(2, 12).toUpperCase();
 }
 
-async function startTool() {
+function randomDate() {
+  const start = new Date(2018, 0, 1);
+  const end = new Date();
+  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return date.toISOString().split('T')[0];
+}
+
+async function main() {
   console.clear();
-  console.log(chalk.bgBlue.bold('   MLBB VALIDATED - CREATES BY SAL   '));
-  console.log();
+  console.log(chalk.magenta.bold('\n=== MLBB VALIDATED | CREATED BY SAL ===\n'));
 
-  const { inputPassword } = await inquirer.prompt([
-    {
-      type: 'password',
-      name: 'inputPassword',
-      message: 'Enter Password to Access:',
-    }
-  ]);
-
-  if (inputPassword !== password) {
-    console.log(chalk.red('Access Denied. Password salah!'));
+  const pass = await question('Enter password: ');
+  if (pass !== 'mlvalidated123') {
+    console.log(chalk.red('Password salah! Akses ditolak.'));
+    rl.close();
     return;
   }
 
-  console.log(chalk.green('Access Granted!'));
-  console.log();
+  console.log(chalk.green('\nAkses diterima!\n'));
+  console.log('Pilihan:');
+  console.log('1. Retrieved MLBB');
+  console.log('2. Fix Contact GM');
 
-  const { menu } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'menu',
-      message: 'Pilih Menu:',
-      choices: ['Retrieved MLBB', 'Fix Contact GM']
-    }
-  ]);
+  const choice = await question('\nPilih menu (1/2): ');
 
-  if (menu === 'Retrieved MLBB') {
-    await retrievedFlow();
+  if (choice.trim() === '1') {
+    console.log('\nLogin Options:');
+    console.log('1. Moonton');
+    console.log('2. Facebook');
+    console.log('3. Google');
+    console.log('4. Tiktok');
+
+    const login = await question('\nPilih login method (1-4): ');
+    const email = await question('Masukkan email akaun: ');
+    const password = await question('Masukkan password akaun: ');
+
+    console.log(chalk.yellow('\nMemproses akaun... Sila tunggu 10 saat.\n'));
+    await delay(10000);
+
+    console.log(chalk.cyan.bold('\n[ GOOGLE ORDER DETAIL ]'));
+    console.log(`Order date   : ${randomDate()}`);
+    console.log(`Order channel: ${randomItem(data.orderChannels)}`);
+    console.log(`Order ID     : ${generateOrderId()}`);
+
+    console.log(chalk.cyan.bold('\n[ ACCOUNT INFO ]'));
+    console.log(`Created on   : ${randomDate()}`);
+    console.log(`Device used  : ${randomItem(data.devices)}`);
+
+    console.log(chalk.cyan.bold('\n[ ACCOUNT HISTORY ]'));
+    console.log(`Third-party past: ${randomItem(data.thirdParty)}`);
+    console.log(`First recharged : ${randomDate()} (132 diamond)`);
+
+    rl.close();
   } else {
-    console.log(chalk.yellow('Fungsi "Fix Contact GM" belum tersedia.'));
+    console.log(chalk.yellow('Feature belum tersedia.'));
+    rl.close();
   }
 }
 
-async function retrievedFlow() {
-  const { method } = await inquirer.prompt([
-    {
-      type: 'list',
-      name: 'method',
-      message: 'Pilih Login Method:',
-      choices: ['Moonton', 'Facebook', 'Google', 'TikTok']
-    }
-  ]);
-
-  const { email, password } = await inquirer.prompt([
-    { type: 'input', name: 'email', message: 'Email Account:' },
-    { type: 'password', name: 'password', message: 'Password Account (Old / New):' }
-  ]);
-
-  const spinner = ora('Memproses... Sila tunggu 10 saat').start();
-  await new Promise(r => setTimeout(r, 10000));
-  spinner.succeed('Siap!');
-
-  console.log('\n' + chalk.bgWhite.black.bold('  [1] GOOGLE ORDER DETAIL  '));
-  console.log(chalk.cyan(`Order Date     : ${randomDate()}`));
-  console.log(chalk.cyan(`Order Channel  : ${data.orderChannels[Math.floor(Math.random() * data.orderChannels.length)]}`));
-  console.log(chalk.cyan(`Order ID       : ${generateOrderId()}`));
-
-  console.log('\n' + chalk.bgWhite.black.bold('  [2] INFO ACCOUNT  '));
-  console.log(chalk.magenta(`Tanggal Dibuat : ${randomDate(new Date(2018, 0, 1))}`));
-  console.log(chalk.magenta(`Device         : ${data.devices[Math.floor(Math.random() * data.devices.length)]}`));
-
-  console.log('\n' + chalk.bgWhite.black.bold('  [3] REKOD LAIN  '));
-  console.log(chalk.yellow(`Third Party Past : ${data.thirdParty[Math.floor(Math.random() * data.thirdParty.length)]}`));
-  console.log(chalk.yellow(`First Recharged  : ${randomDate()} (132 Diamond)`));
-
-  console.log('\n' + chalk.green('Terima kasih guna MLVALIDATED CREATES BY SAL!'));
-}
-
-startTool();
+main();
