@@ -1,0 +1,17 @@
+{
+  "name": "mlvalidated",
+  "version": "1.0.0",
+  "description": "MLBB Account Retrieval CLI Tool - Created by SAL",
+  "main": "mlvalidated.js",
+  "scripts": {
+    "start": "node mlvalidated.js"
+  },
+  "keywords": ["mlbb", "tool", "account", "cli", "validated"],
+  "author": "SAL",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "inquirer": "^9.2.11",
+    "ora": "^6.3.1"
+  }
+}
